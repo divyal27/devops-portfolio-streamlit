@@ -1,430 +1,928 @@
-"""
-app.py — Divyal Padalkar DevOps Portfolio  (FIXED VERSION)
-Run: streamlit run app.py
-"""
+/* ============================================================
+   style.css — Futuristic DevOps Portfolio Theme
+   ============================================================ */
 
-import streamlit as st
-import streamlit.components.v1 as components
-from pathlib import Path
-from data import (
-    PROFILE, STATS, SKILLS, EXPERIENCE,
-    EDUCATION, PROJECTS, CERTIFICATIONS,
-    PIPELINE_STAGES
-)
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap');
 
-# ─── Page Config ──────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="Divyal Padalkar | DevOps Engineer",
-    page_icon="⚙️",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-    menu_items={"Get Help": None, "Report a bug": None, "About": None},
-)
+/* ── Root Variables ── */
+:root {
+  --bg-primary:    #030712;
+  --bg-secondary:  #0a0f1e;
+  --bg-card:       #0d1526;
+  --bg-card-hover: #111d35;
+  --cyan:          #00d4ff;
+  --cyan-dim:      #00d4ff33;
+  --cyan-glow:     #00d4ff88;
+  --teal:          #00ffd0;
+  --blue:          #4d9fff;
+  --blue-dim:      #4d9fff22;
+  --purple:        #7c5cfc;
+  --green:         #00ff88;
+  --green-dim:     #00ff8822;
+  --text-primary:  #e8f4ff;
+  --text-secondary:#8ba3c7;
+  --text-dim:      #4a6280;
+  --border:        #1a2d4a;
+  --border-glow:   #00d4ff44;
+  --font-display:  'Syne', sans-serif;
+  --font-mono:     'JetBrains Mono', monospace;
+}
 
-# ─── Load CSS ─────────────────────────────────────────────────────────────────
-css_path = Path("styles/style.css")
-css_content = ""
-if css_path.exists():
-    with open(css_path) as f:
-        css_content = f.read()
-    st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
+/* ── Global Reset ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-# ─── Helper: load resume bytes ────────────────────────────────────────────────
-def get_resume_bytes():
-    resume_path = Path(PROFILE["resume_file"])
-    if resume_path.exists():
-        with open(resume_path, "rb") as f:
-            return f.read()
-    return None
+html { scroll-behavior: smooth; }
 
-# ─── Key fix: render loop-built HTML via components.html (bypasses sanitizer) ─
-def html_block(html: str, height: int = 400):
-    full = f"""<!DOCTYPE html><html><head>
-    <meta charset="utf-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-    {css_content}
-    *{{margin:0;padding:0;box-sizing:border-box;}}
-    body{{background:transparent;color:var(--text-primary);font-family:var(--font-display);}}
-    </style></head><body>{html}</body></html>"""
-    components.html(full, height=height, scrolling=False)
+.stApp {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# TOP NAV
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown("""
-<nav class="top-nav">
-  <div class="nav-brand">⚙️ &nbsp;divyal.dev</div>
-  <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#skills">Skills</a>
-    <a href="#experience">Experience</a>
-    <a href="#projects">Projects</a>
-    <a href="#pipeline">Pipeline</a>
-    <a href="#contact">Contact</a>
-  </div>
-</nav>
-""", unsafe_allow_html=True)
+/* Hide Streamlit chrome */
+#MainMenu, footer, header { visibility: hidden !important; }
+.stDeployButton { display: none !important; }
+[data-testid="stToolbar"] { display: none !important; }
+[data-testid="stDecoration"] { display: none !important; }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# HERO
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown("""
-<section id="hero">
-<div class="hero-section">
-  <div class="hero-bg"></div>
-  <div class="hero-grid-overlay"></div>
-  <div class="hero-tag">🟢 &nbsp;Available for DevOps / SRE Roles &nbsp;·&nbsp; Pune, India</div>
-  <h1 class="hero-name">Divyal<br><span>Padalkar</span></h1>
-  <p class="hero-tagline">&gt; DevOps Engineer · DevSecOps · AIOps · SRE</p>
-  <p class="hero-summary">
-    Automating Infrastructure. Securing Pipelines. Building Reliable Delivery Systems.<br>
-    3rd-year B.E. Computer Engineering student specializing in cloud-native DevOps —
-    currently interning at Hisan Labs, building automation across CI/CD, Kubernetes,
-    Prometheus, and ELK Stack on AWS.
-  </p>
-  <div class="hero-cta">
-    <a class="btn-primary" href="#projects">🚀 &nbsp;View Projects</a>
-    <a class="btn-outline" href="#contact">✉️ &nbsp;Contact Me</a>
-    <a class="btn-outline" href="#resume">📄 &nbsp;Download Resume</a>
-  </div>
-</div>
-</section>
-""", unsafe_allow_html=True)
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--cyan-glow); border-radius: 2px; }
 
-# ── Stats ─────────────────────────────────────────────────────────────────────
-stats_inner = ""
-for s in STATS:
-    stats_inner += f"""
-    <div class="stat-card">
-      <div class="stat-icon">{s['icon']}</div>
-      <div class="stat-value">{s['value']}</div>
-      <div class="stat-label">{s['label']}</div>
-    </div>"""
-html_block(f'<div class="stats-row">{stats_inner}</div>', height=140)
+/* ── Main container ── */
+.main .block-container {
+  max-width: 1100px !important;
+  padding: 0 2rem 4rem !important;
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# ABOUT
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="about"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 01</div>
-  <h2 class="section-title">About Me</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+/* ── TOP NAV ── */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(3, 7, 18, 0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
 
-col_a, col_b = st.columns([3, 2], gap="large")
-with col_a:
-    st.markdown(f"""
-    <p style="font-size:0.95rem;color:var(--text-secondary);line-height:1.9;margin-bottom:1.25rem;">
-    {PROFILE['summary']}
-    </p>
-    <div class="edu-card">
-      <div>
-        <div class="edu-name">{EDUCATION['institution']}</div>
-        <div class="edu-affil">{EDUCATION['affiliation']}</div>
-        <div class="edu-degree">🎓 {EDUCATION['degree']}</div>
-      </div>
-      <div class="edu-meta">
-        <div class="edu-period">{EDUCATION['period']}</div>
-        <div class="edu-loc">📍 {EDUCATION['location']}</div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
+.nav-brand {
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
 
-with col_b:
-    st.markdown("""
-    <div class="terminal-widget">
-      <div class="terminal-header">
-        <div class="terminal-dot" style="background:#ff5f57"></div>
-        <div class="terminal-dot" style="background:#febc2e"></div>
-        <div class="terminal-dot" style="background:#28c840"></div>
-        <span style="color:var(--text-dim);font-size:0.72rem;margin-left:0.5rem">divyal@devops ~ bash</span>
-      </div>
-      <div class="terminal-body">
-        <div class="terminal-line">
-          <span class="terminal-prompt">divyal@devops:~$</span>
-          <span class="terminal-cmd">whoami</span>
-        </div>
-        <div class="terminal-out terminal-success">Divyal Padalkar // DevOps Engineer</div>
-        <br>
-        <div class="terminal-line">
-          <span class="terminal-prompt">divyal@devops:~$</span>
-          <span class="terminal-cmd">kubectl get pods --all-namespaces</span>
-        </div>
-        <div class="terminal-out">NAMESPACE&nbsp;&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STATUS</div>
-        <div class="terminal-out terminal-success">prod&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;api-server-x4k2p&nbsp;&nbsp;Running ✓</div>
-        <div class="terminal-out terminal-success">prod&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;worker-z9m3q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Running ✓</div>
-        <div class="terminal-out terminal-success">monitor&nbsp;&nbsp;&nbsp;prometheus-7qn2x&nbsp;&nbsp;Running ✓</div>
-        <br>
-        <div class="terminal-line">
-          <span class="terminal-prompt">divyal@devops:~$</span>
-          <span class="terminal-cmd">terraform plan</span>
-        </div>
-        <div class="terminal-out terminal-success">Plan: 5 to add, 0 to change, 0 to destroy.</div>
-        <br>
-        <div class="terminal-line">
-          <span class="terminal-prompt">divyal@devops:~$</span>
-          <span class="terminal-cmd blink">_</span>
-        </div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# SKILLS
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="skills"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 02</div>
-  <h2 class="section-title">Skills &amp; Tools</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
 
-skills_inner = ""
-for category, tools in SKILLS.items():
-    tags_html = "".join(f'<span class="skill-tag">{t}</span>' for t in tools)
-    skills_inner += f"""
-    <div class="skill-category">
-      <div class="skill-cat-title">{category}</div>
-      <div class="skill-tags">{tags_html}</div>
-    </div>"""
-html_block(f'<div class="skills-grid">{skills_inner}</div>', height=480)
+.nav-links a:hover { color: var(--cyan); }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# EXPERIENCE
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="experience"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 03</div>
-  <h2 class="section-title">Experience</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+/* ── HERO ── */
+.hero-section {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6rem 0 3rem;
+  position: relative;
+  overflow: hidden;
+}
 
-timeline_inner = ""
-for exp in EXPERIENCE:
-    dot_class = "timeline-dot current" if exp["type"] == "current" else "timeline-dot"
-    bullets_html = "".join(f"<li>{b}</li>" for b in exp["bullets"])
-    tags_html = "".join(f'<span class="exp-tag">{t}</span>' for t in exp["tags"])
-    role_prefix = "🟢 " if exp["type"] == "current" else ""
-    timeline_inner += f"""
-    <div class="timeline-item">
-      <div class="{dot_class}"></div>
-      <div class="timeline-card">
-        <div class="timeline-header">
-          <div class="timeline-company">{exp['company']}</div>
-          <div class="timeline-period">{exp['period']}</div>
-        </div>
-        <div class="timeline-role">{role_prefix}{exp['role']} · {exp['location']}</div>
-        <ul class="timeline-bullets">{bullets_html}</ul>
-        <div class="timeline-tags">{tags_html}</div>
-      </div>
-    </div>"""
-html_block(f'<div class="timeline">{timeline_inner}</div>', height=580)
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 60% 30%, #00d4ff0a 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, #4d9fff08 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 85% 70%, #7c5cfc08 0%, transparent 50%);
+  pointer-events: none;
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# PROJECTS
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="projects"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 04</div>
-  <h2 class="section-title">Projects</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+.hero-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.25;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
 
-def build_project_cards(proj_list):
-    html = '<div class="projects-grid">'
-    for p in proj_list:
-        stack_tags = "".join(f'<span class="stack-tag">{t}</span>' for t in p["stack"])
-        concepts = " · ".join(p["concepts"])
-        card_class = "project-card highlight" if p.get("highlight") else "project-card"
-        github_btn = (
-            f'<a class="project-btn project-btn-github" href="{p["github"]}" target="_blank">🔗 GitHub</a>'
-            if p.get("github") else ""
-        )
-        live_btn = (
-            f'<a class="project-btn project-btn-github" href="{p["live"]}" target="_blank">🌐 Live</a>'
-            if p.get("live") else ""
-        )
-        html += f"""
-        <div class="{card_class}">
-          <div class="project-title">{p['title']}</div>
-          <div class="project-impact">📈 {p['impact']}</div>
-          <p class="project-desc">{p['description']}</p>
-          <div class="project-concepts">Concepts: {concepts}</div>
-          <div class="project-stack">{stack_tags}</div>
-          <div class="project-actions">{github_btn}{live_btn}</div>
-        </div>"""
-    html += "</div>"
-    return html
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 1px solid var(--cyan-dim);
+  background: var(--cyan-dim);
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.6s ease both;
+}
 
-featured = [p for p in PROJECTS if p.get("highlight")]
-other    = [p for p in PROJECTS if not p.get("highlight")]
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  animation: fadeInUp 0.7s 0.1s ease both;
+}
 
-st.markdown("""<p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cyan);
-letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">⭐ Featured</p>
-""", unsafe_allow_html=True)
-html_block(build_project_cards(featured), height=660)
+.hero-name span {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--teal) 50%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-st.markdown("""<p style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim);
-letter-spacing:0.1em;text-transform:uppercase;margin:1.5rem 0 0.5rem;">More Projects</p>
-""", unsafe_allow_html=True)
-html_block(build_project_cards(other), height=660)
+.hero-tagline {
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.7s 0.2s ease both;
+  max-width: 600px;
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# PIPELINE
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="pipeline"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 05</div>
-  <h2 class="section-title">Continuous Automation</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+.hero-summary {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 620px;
+  margin-bottom: 2.5rem;
+  animation: fadeInUp 0.7s 0.3s ease both;
+}
 
-pipeline_stages_html = ""
-for i, stage in enumerate(PIPELINE_STAGES):
-    pipeline_stages_html += f"""
-    <div class="pipeline-stage">
-      <div class="stage-icon-wrap">{stage['icon']}</div>
-      <div class="stage-label">{stage['label']}</div>
-      <div class="stage-desc">{stage['desc']}</div>
-    </div>"""
-    if i < len(PIPELINE_STAGES) - 1:
-        pipeline_stages_html += '<div class="pipeline-arrow">›</div>'
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.7s 0.4s ease both;
+}
 
-pipeline_full = f"""
-<div class="pipeline-section">
-  <p style="font-size:0.9rem;color:#8ba3c7;line-height:1.8;max-width:600px;margin-bottom:0.5rem;">
-    My engineering philosophy: every change flows through an automated, secure, observable pipeline —
-    from the first commit to production monitoring, with zero manual steps between stages.
-  </p>
-  <div class="pipeline-stages">{pipeline_stages_html}</div>
-</div>"""
-html_block(pipeline_full, height=280)
+/* ── BUTTONS ── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--teal));
+  color: #030712;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  box-shadow: 0 0 24px var(--cyan-glow);
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# CERTIFICATIONS
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 06</div>
-  <h2 class="section-title">Certifications</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px var(--cyan);
+  color: #030712;
+}
 
-cert_inner = ""
-for c in CERTIFICATIONS:
-    cert_inner += f"""
-    <div class="cert-card">
-      <div class="cert-icon">🎓</div>
-      <div>
-        <div class="cert-name">{c['name']}</div>
-        <div class="cert-issuer">{c['issuer']}</div>
-      </div>
-    </div>"""
-html_block(f'<div class="cert-grid">{cert_inner}</div>', height=110)
+.btn-outline {
+  background: transparent;
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.73rem 1.75rem;
+  border: 1px solid var(--cyan-dim);
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# RESUME
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="resume"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 07</div>
-  <h2 class="section-title">Resume</h2>
-  <hr class="section-divider">
-</div>
-""", unsafe_allow_html=True)
+.btn-outline:hover {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  transform: translateY(-2px);
+}
 
-st.markdown(f"""
-<div class="resume-card">
-  <div class="resume-facts">
-    <div class="resume-fact"><span class="resume-fact-icon">👤</span><div><strong>Divyal Padalkar</strong> — DevOps / SRE Engineer</div></div>
-    <div class="resume-fact"><span class="resume-fact-icon">📍</span><div>Pune, Maharashtra, India</div></div>
-    <div class="resume-fact"><span class="resume-fact-icon">🎓</span><div>B.E. Computer Engineering · SPPU · 2027</div></div>
-    <div class="resume-fact"><span class="resume-fact-icon">💼</span><div>DevOps Intern @ Hisan Labs (Feb 2026 – Present)</div></div>
-    <div class="resume-fact"><span class="resume-fact-icon">🛠️</span><div>Docker · Kubernetes · Terraform · Ansible · GitHub Actions · ELK Stack</div></div>
-    <div class="resume-fact"><span class="resume-fact-icon">☁️</span><div>AWS · GCP · Azure</div></div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+/* ── SECTION TITLES ── */
+.section-wrap {
+  padding: 5rem 0 2rem;
+}
 
-st.markdown("<div style='margin-top:1.5rem'></div>", unsafe_allow_html=True)
-resume_bytes = get_resume_bytes()
-if resume_bytes:
-    st.download_button(
-        label="⬇️  Download Resume (PDF)",
-        data=resume_bytes,
-        file_name="Divyal_Padalkar_Resume.pdf",
-        mime="application/pdf",
-    )
-else:
-    st.markdown("""
-    <div style="background:var(--bg-card);border:1px dashed var(--border);border-radius:8px;
-    padding:1rem 1.5rem;font-family:var(--font-mono);font-size:0.8rem;color:var(--text-dim);">
-    ⚠️ &nbsp;Place your resume PDF at
-    <code style="color:var(--cyan)">assets/Divyal_Padalkar_Resume.pdf</code> to enable download.
-    </div>
-    """, unsafe_allow_html=True)
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--cyan);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# CONTACT
-# ═══════════════════════════════════════════════════════════════════════════════
-st.markdown('<div id="contact"></div>', unsafe_allow_html=True)
-st.markdown("""
-<div class="section-wrap">
-  <div class="section-label">// 08</div>
-  <h2 class="section-title">Let's Connect</h2>
-  <hr class="section-divider">
-  <p style="font-size:0.95rem;color:var(--text-secondary);line-height:1.8;max-width:550px;margin-bottom:0.5rem;">
-    I'm actively looking for <strong style="color:var(--text-primary)">DevOps / SRE / DevSecOps</strong>
-    internships and fresher roles. If you're building reliable systems and want someone who cares deeply
-    about automation and observability — let's talk.
-  </p>
-</div>
-""", unsafe_allow_html=True)
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
 
-contact_html = f"""
-<div class="contact-grid">
-  <a class="contact-card" href="mailto:{PROFILE['email']}">
-    <div class="contact-icon">✉️</div>
-    <div class="contact-label">Email</div>
-    <div class="contact-value">{PROFILE['email']}</div>
-  </a>
-  <a class="contact-card" href="{PROFILE['github']}" target="_blank">
-    <div class="contact-icon">🐙</div>
-    <div class="contact-label">GitHub</div>
-    <div class="contact-value">github.com/divyal27</div>
-  </a>
-  <a class="contact-card" href="{PROFILE['linkedin']}" target="_blank">
-    <div class="contact-icon">💼</div>
-    <div class="contact-label">LinkedIn</div>
-    <div class="contact-value">Divyal Padalkar</div>
-  </a>
-  <a class="contact-card" href="tel:{PROFILE['phone']}">
-    <div class="contact-icon">📱</div>
-    <div class="contact-label">Phone</div>
-    <div class="contact-value">{PROFILE['phone']}</div>
-  </a>
-</div>"""
-html_block(contact_html, height=200)
+.section-divider {
+  height: 2px;
+  width: 60px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+  margin-bottom: 3rem;
+  border: none;
+}
 
-# ─── Footer ───────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="portfolio-footer">
-  Built with <span>⚙️ precision</span> by Divyal Padalkar &nbsp;·&nbsp;
-  <span>DevOps · DevSecOps · AIOps</span> &nbsp;·&nbsp; Pune, India
-</div>
-""", unsafe_allow_html=True)
+/* ── STATS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 3rem 0;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stat-card:hover { border-color: var(--cyan-glow); background: var(--bg-card-hover); }
+.stat-card:hover::before { opacity: 1; }
+
+.stat-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.stat-value { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: var(--cyan); }
+.stat-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; letter-spacing: 0.05em; }
+
+/* ── SKILLS ── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.skill-category {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.3s;
+}
+
+.skill-category:hover {
+  border-color: var(--cyan-glow);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.skill-cat-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.skill-tag {
+  background: var(--blue-dim);
+  border: 1px solid #4d9fff33;
+  color: var(--blue);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 100px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+}
+
+.skill-tag:hover {
+  background: var(--blue);
+  color: var(--bg-primary);
+  transform: scale(1.05);
+}
+
+/* ── TIMELINE (Experience) ── */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--cyan), var(--purple), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding-left: 1.5rem;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -2.4rem;
+  top: 0.25rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--cyan);
+  background: var(--bg-primary);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+
+.timeline-dot.current {
+  background: var(--cyan);
+  animation: pulse 2s infinite;
+}
+
+.timeline-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.timeline-card:hover {
+  border-color: var(--cyan-glow);
+  background: var(--bg-card-hover);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-company {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.timeline-period {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.timeline-role {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--teal);
+  margin-bottom: 1rem;
+}
+
+.timeline-bullets {
+  list-style: none;
+  padding: 0;
+}
+
+.timeline-bullets li {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.timeline-bullets li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+.timeline-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.exp-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid #00ff8833;
+}
+
+/* ── PROJECTS ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.35s;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--teal), var(--purple));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.project-card.highlight {
+  border-color: var(--cyan-glow);
+}
+
+.project-card.highlight::before { opacity: 1; }
+
+.project-card:hover {
+  border-color: var(--cyan);
+  background: var(--bg-card-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 212, 255, 0.08);
+}
+
+.project-card:hover::before { opacity: 1; }
+
+.project-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+
+.project-impact {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--green);
+  background: var(--green-dim);
+  border: 1px solid #00ff8822;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+
+.project-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.project-concepts {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.project-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.stack-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: var(--blue-dim);
+  color: var(--blue);
+  border: 1px solid #4d9fff22;
+}
+
+.project-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.project-btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.9rem;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.project-btn-github {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.project-btn-github:hover {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border-color: var(--cyan-glow);
+}
+
+/* ── PIPELINE ── */
+.pipeline-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.pipeline-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, #00d4ff06, transparent);
+  pointer-events: none;
+}
+
+.pipeline-stages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: 2rem;
+}
+
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+}
+
+.stage-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+}
+
+.pipeline-stage:hover .stage-icon-wrap {
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px var(--cyan-glow);
+  transform: scale(1.15);
+}
+
+.stage-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+}
+
+.stage-desc {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  max-width: 80px;
+  line-height: 1.4;
+}
+
+.pipeline-arrow {
+  color: var(--cyan-glow);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  padding: 0 0.1rem;
+  margin-bottom: 1.6rem;
+  animation: arrowPulse 2s infinite;
+}
+
+/* ── TERMINAL ── */
+.terminal-widget {
+  background: #050d1a;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+}
+
+.terminal-header {
+  background: var(--bg-secondary);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+
+.terminal-body {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.8rem;
+  line-height: 2;
+}
+
+.terminal-line { display: flex; align-items: flex-start; gap: 0.5rem; }
+.terminal-prompt { color: var(--teal); }
+.terminal-cmd { color: var(--text-primary); }
+.terminal-out { color: var(--text-secondary); padding-left: 1.5rem; }
+.terminal-success { color: var(--green); }
+.terminal-warn { color: #ffaa00; }
+
+/* ── CERTIFICATIONS ── */
+.cert-grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cert-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 220px;
+}
+
+.cert-card:hover {
+  border-color: var(--cyan-glow);
+  background: var(--bg-card-hover);
+}
+
+.cert-icon { font-size: 1.5rem; }
+.cert-name { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.1rem; }
+.cert-issuer { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); }
+
+/* ── CONTACT ── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.contact-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-card:hover {
+  border-color: var(--cyan-glow);
+  background: var(--bg-card-hover);
+  transform: translateY(-3px);
+  color: var(--cyan);
+}
+
+.contact-icon { font-size: 1.75rem; }
+.contact-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.contact-value { font-size: 0.85rem; font-weight: 600; word-break: break-all; }
+
+/* ── FOOTER ── */
+.portfolio-footer {
+  margin-top: 5rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.portfolio-footer span { color: var(--cyan); }
+
+/* ── EDUCATION CARD ── */
+.edu-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.edu-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+.edu-affil { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); margin-top: 0.2rem; }
+.edu-degree { font-family: var(--font-mono); font-size: 0.8rem; color: var(--teal); margin-top: 0.35rem; }
+.edu-meta { text-align: right; }
+.edu-period { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); }
+.edu-loc { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* ── RESUME SECTION ── */
+.resume-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.resume-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 50% 80% at 80% 50%, #00d4ff08, transparent);
+  pointer-events: none;
+}
+
+.resume-facts { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.resume-fact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.resume-fact-icon { font-size: 1rem; width: 20px; text-align: center; }
+.resume-fact strong { color: var(--text-primary); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--cyan-glow); }
+  50% { box-shadow: 0 0 20px var(--cyan); }
+}
+
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes terminalBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink { animation: terminalBlink 1s infinite; }
+
+/* ── Streamlit element overrides ── */
+.stMarkdown { color: var(--text-primary) !important; }
+.stDownloadButton > button {
+  background: linear-gradient(135deg, var(--cyan), var(--teal)) !important;
+  color: #030712 !important;
+  font-family: var(--font-mono) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 0.6rem 1.5rem !important;
+  box-shadow: 0 0 24px var(--cyan-glow) !important;
+  transition: all 0.2s !important;
+}
+.stDownloadButton > button:hover {
+  box-shadow: 0 0 40px var(--cyan) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .pipeline-stages { gap: 1rem; }
+  .pipeline-arrow { display: none; }
+  .pipeline-stage { min-width: 70px; }
+  .hero-name { font-size: 2.5rem; }
+  .nav-links { gap: 1rem; }
+  .main .block-container { padding: 0 1rem 4rem !important; }
+  .edu-card { flex-direction: column; }
+  .edu-meta { text-align: left; }
+}
+
